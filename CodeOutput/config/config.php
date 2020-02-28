@@ -71,6 +71,6 @@ define('H_FILE','gfile');
 define('H_DATE','gdate');
 
 //System Access
-define('H_SYSTEM_ACCESS','');
-define('H_USER_SESSION','');
+define('H_SYSTEM_ACCESS','user_access');
+define('H_USER_SESSION','sessionname');
 ?>

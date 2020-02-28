@@ -56,6 +56,6 @@ define('PHP_VALIDATION','Enable');
 define('PAGINATION_TYPE','Normal');
 
 //Exemption for access
-define('H_SYSTEM_ACCESS','');
-define('H_USER_SESSION','');
+define('H_SYSTEM_ACCESS','user_access');
+define('H_USER_SESSION','sessionname');
 ?>
