@@ -1,462 +1,250 @@
 <?php
-/*
-	HEZECOM PHP CODE GENERATOR ULTIMATE (UltimateSpeed)
-	Author: Hezecom Technologies (http://hezecom.com) info@hezecom.net
-	COPYRIGHT 2015 ALL RIGHTS RESERVED
-	FILE NAME index.php 
-	
-	You must have purchased a valid license from CodeCanyon.com in order to have 
-	access this file.
-
-	You may only use this file according to the respective licensing terms 
-	you agreed to when purchasing this item.
-*/
-
-	include('lib/config.php');
-	include('lib/functions.php');
-	include("lib/class_dbcon.php");
-	$db=DB::getInstance();
-	$fom="<?php htmlspecialchars(";$fom.="$";$fom.="_SERVER['PHP_SELF']);?>";
+	session_start();
+	include('config/config.php');
+	include('language/eng.php');
+	include('libraries/functions.php');
+	include_once('libraries/class_dbcon.php');
+	include_once('libraries/upload_class.php');
+	include_once('libraries/class_database.php');
+	include_once('libraries/system_users.php');
+	$haccess = new admin_users_model();
+	$acc=$haccess->UserAccess();
 ?>
-
 <!DOCTYPE html>
-<html lang="en">
-<head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>Code Driver</title>
-<link rel="stylesheet" href="CodeOutput/public/themes/default/css/bootstrap.min.css">
-<link rel="stylesheet" href="CodeOutput/public/themes/default/css/font-awesome.min.css">
-<link rel="stylesheet" href="assets/css/admin.css">
-</head>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title><?php echo H_TITLE;?></title>
+    <meta content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' name='viewport'>
+    <link href="<?php echo H_THEME;?>/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="<?php echo H_THEME;?>/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+    <link href="<?php echo H_THEME;?>/css/AdminLTE.min.css" rel="stylesheet" type="text/css" />
+    <link href="<?php echo H_THEME;?>/css/footable.core.min.css" rel="stylesheet" type="text/css"/>
+    <link href="<?php echo H_THEME;?>/css/skins.min.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="<?php echo H_THEME;?>/css/jquery.lightbox.min.css" type="text/css" media="screen"/>
+    <link rel="stylesheet" href="<?php echo H_THEME;?>/css/datepicker.css">
+    <link href="<?php echo H_THEME;?>/css/chosen.min.css" rel="stylesheet">
+    <link href="<?php echo H_THEME;?>/css/bootstrap3-wysihtml5.min.css" rel="stylesheet" type="text/css" />
+    <link href="<?php echo H_THEME;?>/css/admin.css" rel="stylesheet">
+    <script src="<?php echo H_THEME;?>/js/modernizr.custom.js"></script>
+    <script type="text/javascript" src="libraries/tinymce/js/tinymce/tinymce.min.js"></script>
+    <script src="<?php echo H_THEME;?>/js/jQuery-2.1.3.min.js"></script>
 
-<body>
-
-
-	<?php if(isset($_GET['cleared'])){?>
-    <div class="heze-notify progress-bar-success"><p>All Generated Codes Were Deleted Successfully</p></div>
-    
-	<?php } elseif(isset($_GET['do'])){?>
-	<div class="heze-notify progress-bar-success"><p>Database Settings Updated Successfully</p></div>
-    <?php }?>
-  
-    <div id="hezewraper">
-      <div class="navbar navbar-static-top navbar-fixed-top navbar-inverse">
-          <button type="button" class="navbar-toggle pull-left" data-toggle="collapse" id="showLeft" style="border:0;">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          
-      <a class="navbar-brand" href="index.php" style="color:#FFF;">Gen Ultimate</a>
-          <div class="collapse navbar-collapse navbar-ex1-collapse">
-    <ul class="nav navbar-nav pull-right">
-      <li><a href="index.php" style="color:#FFF;">Generator</a></li>
-      <li><a href="customsql.php" style="color:#FFF;">Show SQL</a></li>
-      <li class="dropdown">
-        <a href="#" class="dropdown-toggle" data-toggle="dropdown" style="color:#FFF;">View Code Output <b class="caret"></b></a>
-        <ul class="dropdown-menu" style="background:#689CD7;">
-          <li><a href="CodeOutput/admin.php" target="_blank">Admin Login</a></li>
-          <li><a href="CodeOutput/index.php" target="_blank">Clients No Login</a></li>
-        </ul>
-      </li>
-    </ul>
-   </div><!--/.nav-collapse -->
-</div>
+  </head>
+  <?php 
+  if(get('pg')=='login'){
+	  include('libraries/views/admin/login.php');
+  }elseif(get('pg')=='register'){
+	  include('libraries/views/admin/register.php');
+   }elseif(get('pg')=='lost'){
+	  include('libraries/views/admin/lost.php');
+  }else{
+	  ?>
+  <body class="skin-blue">
+  <?php
+  		if(get('msg')=='add'){success_msg(LANG_SUCCESS_ADD);}
+		elseif(get('msg')=='update'){success_msg(LANG_SUCCESS_UPDATE);}
+		elseif(get('msg')=='delete'){success_msg(LANG_SUCCESS_DELETE);}
+		elseif(get('msg')=='truncate'){success_msg(LANG_SUCCESS_TRUNCATE);}
+		elseif(get('msg')=='error'){error_msg(LANG_ERROR_MSG);}
+		elseif(get('msg')=='backup'){success_msg(LANG_BACKUP_CREATED);}
+		elseif(get('dbrestore')!=''){success_msg(LANG_BACKUP_RESTORED);}
+		elseif(get('dbfile')!=''){success_msg(LANG_BACKUP_DELETED);}
+		?>
+    <div class="wrapper">
       
-    
-     
-<div id="hezewraper">    
-<!-- BODY CONTENTS -->
-<div class="heze-container">
-<div class="container">
-
-<div class="headbread">
- <div class="col-12">
-  <h3><i class="fa fa-dashboard"></i> Application Setup Area</h3>
-  </div>
-</div>
-<div class="row"> 
-<div class="col-md-6">
-<div class="panel panel-default">
-  <!-- Default panel contents -->
-  <div class="panel-heading"><h3 class="panel-title"><i class="fa fa-reorder"></i> General Settings</h3></div>
-  <div class="panel-body">
-   <p>
-    <?php if(isset($_GET['do'])){
-		if(UPLOAD_TYPE=='multiplefile' or UPLOAD_TYPE=='multipleimage'){
-		$sql =" CREATE TABLE IF NOT EXISTS `hfiles` (
-	  `fid` int(11) NOT NULL AUTO_INCREMENT,
-	  `relateid` int(11) DEFAULT NULL,
-	  `gfile` varchar(50) DEFAULT NULL,
-	  `gdate` date DEFAULT NULL,
-	   PRIMARY KEY (`fid`)
-	   ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;
-	   ";
-		$db->exec($sql); 
-		}
-		}?>
-        <form action="lib/settings.php?setn=yes" method="post" name="setting" id="setting" role="codeform">
-        
-        <div class="row">
-        
-        <div class="col-md-6">
-        <div class="form-group">
-          <label class="control-label sr-only" for="host">HOST</label>
-          <div class="input-group">
-          <div class="input-group-addon left">HOST</div>
-          <input id="host" name="host" class="form-control input-sm" type="text" value="<?php echo LOCALHOST;?>" required />
+      <header class="main-header">
+        <a href="index.php" class="logo"><b>Ultimate</b>SPEED</a>
+        <!-- Header Navbar: style can be found in header.less -->
+        <nav class="navbar navbar-static-top" role="navigation">
+          <!-- Sidebar toggle button-->
+          <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <div class="navbar-custom-menu">
+            <ul class="nav navbar-nav">
+              <!-- Messages: style can be found in dropdown.less-->
+              <li class="dropdown messages-menu">
+              <li class=" user user-menu"><a href="<?php echo H_LOGIN;?>" class="btn btn-success">Login</a></li>
+              <li class=" user user-menu"><a href="<?php echo H_REGISTER;?>" class="btn btn-success">Register</a></li>
+             
+            </ul>
           </div>
-        </div>
-        </div>
-        
-        <div class="col-md-6">
-        <div class="form-group">
-          <label class="control-label sr-only" for="dbname">DATABASE NAME</label>
-          <div class="input-group">
-          <div class="input-group-addon left">DATABASE NAME</div>
-          <input id="dbname" name="dbname" class="form-control input-sm" type="text" value="<?php echo DB_NAME;?>" />
-        </div>
-        </div>
-        </div>
-        </div><!--/row-->
-
-		<div class="row">
-        <div class="col-md-6">
-        <div class="form-group">
-        <label class="control-label sr-only" for="username">USERNAME</label>
-        <div class="input-group">
-        <div class="input-group-addon left">USERNAME</div>
-        <input id="username" class="form-control input-sm" name="username" placeholder="username" type="text" value="<?php echo DB_USERNAME;?>" />
-        </div>
-        </div>
-        </div>
-        
-        <div class="col-md-6">
-        <div class="form-group">
-          <label class="control-label sr-only" for="password">PASSWORD</label>
-          <div class="input-group">
-          <div class="input-group-addon left">PASSWORD</div>
-          <input id="password" name="password" class="form-control input-sm" type="text" value="<?php echo DB_PASSWORD;?>" />
-          </div>
-          </div>
-          </div>
-          </div><!--/row-->
-
-          <div class="form-group">
-          <label class="control-labe sr-only" for="dbtype">CONNECTION TYPE</label>
-          <div class="input-group">
-          <div class="input-group-addon left">CONNECTION TYPE</div>
-          <input name="dbtype" type="text" class="form-control input-sm" id="dbtype" value="mysql" readonly />
-          </div>
-          </div>
+        </nav>
+      </header>
+      <!-- Left side column. contains the logo and sidebar -->
+      <aside class="main-sidebar">
+        <!-- sidebar: style can be found in sidebar.less -->
+        <section class="sidebar">
           
-          <div class="form-group">
-          <label class="control-label sr-only" for="ptitle">PROJECT TITLE</label>
-          <div class="input-group">
-          <div class="input-group-addon left">PROJECT TITLE</div>
-          <input id="ptitle" name="ptitle" class="form-control input-sm" type="text" value="<?php echo H_TITLE;?>" />
-          </div>
-          </div>
-          
-        <div class="form-group">
-        <label class="control-label sr-only" for="pgtype">PAGINATION TYPE</label>
-        <div class="input-group">
-        <div class="input-group-addon left">PAGINATION TYPE</div>
-        <select name="pgtype" id="pgtype" class="form-control input-sm">
-        <option value="<?php echo PAGINATION_TYPE;?>"><?php echo PAGINATION_TYPE;?></option>
-        <option value="Normal">Normal</option>
-        </select>
-        </div>
-        <span class="help-block"><small><em>These can also be changed at <strong>config/config.php</strong></em></small></span>
-        </div>
-        
-        <div class="form-group">
-        <label class="control-label sr-only" for="formpro">FORMS PROCESSING</label>
-        <div class="input-group">
-        <div class="input-group-addon left">FORMS PROCESSING</div>
-        <select name="formpro" id="formpro" class="form-control input-sm">
-        <option value="<?php echo FORMS_PROCESSING;?>"><?php echo FORMS_PROCESSING;?></option>
-        <option value="Normal">Normal</option>
-        <option value="Ajax">Ajax</option>
-        </select>
-        </div>
-        </div>
-        
-         <div class="form-group">
-        <label class="control-label sr-only" for="phpval">PHP FORMS VALIDATION</label>
-        <div class="input-group">
-        <div class="input-group-addon left">PHP FORMS VALIDATION</div>
-        <select name="phpval" id="phpval" class="form-control input-sm">
-        <option value="<?php echo PHP_VALIDATION;?>"><?php echo PHP_VALIDATION;?></option>
-        <option value="Enable">Enable</option>
-        <option value="Disable">Disable</option>
-        </select>
-        </div>
-        </div>
-        
-        
-          <div class="form-group">
-          <label class="control-label sr-only" for="display">RECORDS DISPLAY PER ROW</label>
-          <div class="input-group">
-          <div class="input-group-addon left">RECORDS DISPLAY PER ROW</div>
-          <input id="display" name="display" class="form-control input-sm" type="text" value="<?php echo VIEW_DISPLAY;?>" />
-          </div>
-          </div>
-          
-          <div class="form-group">
-          <label class="control-label sr-only" for="recordsp">RECORDS TO DISPLAY PER PAGE</label>
-          <div class="input-group">
-          <div class="input-group-addon left">RECORDS TO DISPLAY PER PAGE</div>
-          <input id="recordsp" name="recordsp" class="form-control input-sm" type="text" value="<?php echo RECORD_PER_PAGE;?>" />
-          </div>
-          </div>
-        
-        <div class="form-group">
-        <label class="control-label sr-only" for="form_temp">FORM TEMPLATE</label>
-        <div class="input-group">
-        <div class="input-group-addon left">FORM TEMPLATE</div>
-        <select name="form_temp" id="form_temp" class="form-control input-sm">
-        <option value="<?php echo FORM_TEMPLATE;?>"><?php echo FORM_TEMPLATE;?></option>
-        <option value="Normal">Normal</option>
-        <option value="Grouped">Grouped</option>
-        </select>
-		</div>
-        </div>
-        
-        <div class="form-group">
-        <label class="control-label sr-only" for="form_style">FORM INPUTS STYLING</label>
-        <div class="input-group">
-        <div class="input-group-addon left">FORM INPUTS STYLING</div>
-        <select name="form_style" id="form_style" class="form-control input-sm">
-        <option value="<?php echo FORM_STYLE;?>"><?php if(FORM_STYLE=='styler') echo 'Gradient Background';else echo'Normal'?></option>
-        <option value="">Normal</option>
-        <option value="styler">Gradient Background</option>
-        </select>
-		</div>
-        </div>
-          
-		<div class="form-group">
-        <label class="control-label sr-only" for="jval">HTML5 VALIDATION</label>
-        <div class="input-group">
-        <div class="input-group-addon left">HTML5 VALIDATION</div>
-        <select name="jval" id="jval" class="form-control input-sm">
-        <option value="<?php echo JQUERY_VALIDATE;?>"><?php if(JQUERY_VALIDATE=='required') echo 'Enabled';else echo'Disabbled'?></option>
-        <option value="required">Enabled</option>
-        <option value="">Disabbled</option>
-        </select>
-		</div>
-        </div>
-        
-        <div class="form-group">
-        <label class="control-label sr-only" for="ctype">CLASS TYPE</label>
-        <div class="input-group">
-        <div class="input-group-addon left">CLASS TYPE</div>
-        <select name="ctype" id="ctype" class="form-control input-sm">
-        <option value="<?php echo CLASS_TYPE;?>"><?php if(CLASS_TYPE=='default') echo 'Default Constructor Class';else echo'Get and Set Class'?></option>
-        <option value="default">Default Construct Class</option>
-        <option value="getset">Get and Set Class</option>
-        </select>
-		</div>
-        </div>
-        
-         <div class="form-group">
-        <label class="control-label sr-only" for="uploadtype">UPLOAD HANDLING TYPE</label>
-        <div class="input-group">
-        <div class="input-group-addon left">UPLOAD HANDLING TYPE</div>
-        <select name="uploadtype" id="uploadtype" class="form-control input-sm">
-        <option value="<?php echo UPLOAD_TYPE;?>"><?php if(UPLOAD_TYPE=='imgonly') echo 'Image Upload and Resize';elseif(UPLOAD_TYPE=='fileonly') echo'File and Image Upload'; elseif(UPLOAD_TYPE=='multipleimage') echo 'Multiple Image Upload and Resize'; elseif(UPLOAD_TYPE=='multiplefile') echo 'Multiple File Upload'?></option>
-        <option value="fileonly">File and Image Upload</option>
-        <option value="imgonly">Image Upload and Resize</option>
-        <option value="multipleimage">Multiple Image Upload and Resize</option>
-        <option value="multiplefile">Multiple File Upload</option>
-        </select></div>
-         <span class="help-block"><small><em>Only detect file upload when field type is set to VARBINARY in your Database.</em></small></span>
-		</div>
-        
-        
-         <div class="form-group">
-          <label class="control-label sr-only" for="adminuser">IMAGE SIZE </label>
+          <hr style="border-color:#666;">
          
-          <div class="input-group-addon left">IMAGE SIZE</div> 
-          <div class="row">
-  <div class="col-lg-4">
-  <div class="input-group">
-        <div class="input-group-addon left">BIG</div>
-   <input id="bigsize" name="bigsize" class="form-control input-sm" type="text" value="<?php echo BIG_IMAGE_WIDTH;?>" />
-   </div>
-   </div>
-   
-   <div class="col-lg-4">
-   <div class="input-group">
-   <div class="input-group-addon left">THUMB</div>
-   <input id="thumbsize" name="thumbsize" class="form-control  input-sm" type="text" value="<?php echo THUMB_IMAGE_WIDTH;?>" />
-          </div>
-          </div>
-          </div>
-   </div>
-          
-        <div class="form-group">
-        <label class="control-label sr-only" for="editortype">TEXT AREA HANDLING</label>
-        <div class="input-group">
-        <div class="input-group-addon left">TEXT AREA HANDLING</div>
-        <select name="editortype" id="editortype" class="form-control input-sm">
-        <option value="<?php echo EDITOR_TYPE;?>"><?php if(EDITOR_TYPE=='tinymce') echo 'TinyMCE Text Editor';elseif(EDITOR_TYPE=='html5') echo 'HTML5 Text Editor';else echo'Normal Text Area'?></option>
-        <option value="html5">HTML5 Text Editor</option>
-        <option value="tinymce">TinyMCE Text Editor</option>
-        <option value="normal_txt">Normal Text Area</option>
-        </select>
-		</div>
-        </div>
+          <!-- sidebar menu-->
+          <ul class="sidebar-menu">
+            
+            <?php include(APP_FOLDER.'/views/public/menu.php');?>
+            
+            <li class="treeview">
+              <a href="#">
+                <i class="fa fa-share"></i> <span>more</span> <i class="fa fa-angle-left pull-right"></i>
+              </a>
+              <ul class="treeview-menu">
+                <li><a href="index.html"><i class="fa fa-circle-o"></i> Menu 1</a></li>
+                <li><a href="index2.html"><i class="fa fa-circle-o"></i> Menu 2</a></li>
+              </ul>
+            </li>
+            
+          </ul>
+        </section>
+        <!-- /.sidebar -->
+      </aside>
 
-          
-           <div class="form-group">
-          <label class="control-label sr-only" for="adminuser">DEFAULT LOGIN DETAILS </label>
-         
-          <div class="input-group-addon left">DEFAULT LOGIN DETAILS</div> 
-          <div class="row">
-  <div class="col-lg-6">
-  <div class="input-group">
-        <div class="input-group-addon left">USERNAME </div>
-   <input name="adminuser" type="text" class="form-control input-sm" id="adminuser" value="<?php echo ADMIN_USERNAME;?>" readonly />
-   </div>
-   </div>
-   
-   <div class="col-lg-6">
-   <div class="input-group">
-   <div class="input-group-addon left">PASSWORD</div>
-   <input name="adminpwd" type="text" class="form-control  input-sm" id="adminpwd" value="<?php echo ADMIN_PASSWORD;?>" readonly />
-          </div>
-          </div>
-          </div>
-   </div>
-          
-           <div class="form-group">
-          <label class="control-label sr-only" for="system_access">USERS ACCESS SETTINGS </label>
-          <div class="input-group-addon left">USERS ACCESS SETTINGS</div> 
-          <div class="row">
-  <div class="col-lg-6">
-  <div class="input-group">
-        <div class="input-group-addon left">TABLE NAME</div>
-   <input id="system_access" name="system_access" class="form-control input-sm" type="text" value="<?php echo H_SYSTEM_ACCESS;?>" />
-   </div>
-   </div>
-   
-   <div class="col-lg-6">
-   <div class="input-group">
-   <div class="input-group-addon left">SESSION NAME</div>
-   <input id="user_session" name="user_session" class="form-control  input-sm" type="text" value="<?php echo H_USER_SESSION;?>" />
-          </div>
-          </div>
-          </div>
-   </div>
-          
-		<div class="form-group">
-          <input name="button" type="submit" class="btn btn-info btn-lg" value="Update Settings" id="button" />
-        </div>
-      </form>
-      
-   </p>
-  </div>
-</div>
- </div><!--/col-md-6-->
- 
- <div class="col-md-6">
-<div class="panel panel-default">
-  <!-- Default panel contents -->
-  <div class="panel-heading"><h3 class="panel-title"><i class="fa fa-reorder"></i> Table(s) for database <?php echo DB_NAME;?></h3></div>
-  <div class="panel-body">
-   <p>
-    <?php
-	$sql = "SHOW TABLES";
-	$n='';
-    foreach ($db->query($sql) as $row)
-     {
-	if($row[0]!=H_SYSTEM_ACCESS){
-	if($row[0]!=UPLOAD_TABLE){
-	if(isset($n)) $n=$n++;
-	?>
-    <form action="index.php" method="post" name="form<?php echo $n;?>" id="form<?php echo $n;?>" class="form-horizontal">
-    <?php     
-	print'
-	<span class="btn btn-default btn-sm"><input name="tablename" type="checkbox" value="'.$row[0].'"  checked="CHECKED" /></span>
-	<span class="btn btn-primary btn-sm">'.$row[0].'</span> ';
-	?>
-    <input type="hidden" name="classname" value="<?php echo $row[0];?>" />
-	<?php
-    $sql = "SHOW COLUMNS FROM ".$row[0]." WHERE Extra='AUTO_INCREMENT'";
-	 foreach ($db->query($sql) as $row)
-        {	
-	$colname=$row[0];
-	?>
-    <input type="hidden" name="keyname" value="<?php echo $colname;?>" />
-    <?php //}?>
-    <input name="faction" type="hidden" id="faction" value="<?php echo ($fom);?>">
-    <input type="hidden" name="fbutton" value="Submit" id="fbutton" />
-	<input type="hidden" name="dform" value="dform" />
-    
-     </form>
-     <?php }}}}
-	 include('lib/Generator.php');
-	?> 
-  <br><br>   
- <input type="submit" id="submit_all" class="btn btn-info btn-lg " value="Generate Codes For Selected Table(s)"  />
-  
- <button  id="loader" class="btn btn-success"><i class="fa fa-refresh fa-spin fa-2x"></i> Processing results please wait...</button>
- <br><br>
- <small>Please wait a while after you click on the Generate button. You will get a success notification  message.</small>
-		</p>
-        </div></div>
-        
-       
-        <a href="lib/settings.php?appclear=clear" class="btn btn-danger" >Clear Generated Code</a>
-       
-   </p>
-  </div>
-</div>
- </div><!--/col-md-6-->
- </div>
- 
-  </div><!--contaner-->    
- </div><!--/heze-container-->       
-</div><!--hezewraper-->
+      <!-- Right side column-->
+      <div class="content-wrapper">
+        <!-- Content Header -->
+        <section class="content-header">
+          <h1>
+            <?php echo H_TITLE;?>
+            <small>Version 3.0</small>
+          </h1>
+          <ol class="breadcrumb">
+            <li><a href="<?php echo H_CLIENT;?>" ><i class="fa fa-dashboard"></i> Dashboard</a></li>
+            <!--<li><a href="#">Tables</a></li>-->
+          </ol>
+        </section>
 
-<?php if(get('scode')==1){?>
-<!-- Modal -->
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">Application Creation Success:</h4>
-      </div>
-      <div class="modal-body">
-        - All required codes where generated successfully.<br>
-        - Admin creation successful.<br><br>
-        <a href='CodeOutput/index.php' target='_blank' class='btn btn-info'>Preview App</a>
-        <a href='CodeOutput/admin.php' target='_blank' class='btn btn-info'>Preview App Admin</a>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Go Back to app maker</button>
+        <!-- Main content -->
+        <section class="content">
+         <?php 
+		if(get('view')){
+		include(APP_FOLDER.'/controllers/admin/main.php');
+		include('libraries/controllers/database.php');
+		include('libraries/controllers/system_users.php');
+		}else{
+		?>
+
+          <!-- DESIGN AREA -->
+          <div class="box">
+            <div class="box-header with-border">
+              <h3 class="box-title">Hezecom Ultimate Speed</h3>
+              <div class="box-tools pull-right">
+                <button class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse"><i class="fa fa-minus"></i></button>
+                <button class="btn btn-box-tool" data-widget="remove" data-toggle="tooltip" title="Remove"><i class="fa fa-times"></i></button>
+              </div>
+            </div>
+            <div class="box-body">
+               <section class="section">
+        <div class="container">
+            <div class="row">
+               <div class="col-md-6 text-center">
+                    <div class="phone">
+                        <img class="img-responsive" src="public/themes/hezecom1/images/advert.png">
+                    </div>
+                </div>
+                <div class="col-md-5">
+                    <div class="content">
+                        <div class="pull-middle">
+                            <h2 class="h1 page-header" style="color:#F00">What is new in version 3 ?</h2>
+                            <ul class="media-list">
+                              <li class="media">
+                                <a class="media-left" href="#">
+                                  <span class="fa fa-dashboard icon text-success"></span>
+                                </a>
+                                <div class="media-body">
+                                  <h3 class="media-heading">Design and code structure</h3>
+                                  <p>New responsive design and code structure</p>
+                                  <p>Dashboard with database statistics. </p>
+                                  <p>Summary for each table on the dashboard.</p>
+                                  <p>Now have HTML 5 lite Editor</p>
+                                  <p>SQL analysis page for each table</p>
+                                </div>
+                              </li>
+                              <li class="media">
+                                <a class="media-left" href="#">
+                                  <span class="fa fa-bar-chart-o icon text-success"></span>
+                                </a>
+                                <div class="media-body">
+                                  <h3 class="media-heading">Ready to use chart.</h3>
+                                  <p>Charts summary based on record on each table.</p>
+                                </div>
+                              </li>
+                              <li class="media">
+                                <a class="media-left" href="#">
+                                  <span class="fa fa-user icon text-success"></span>
+                                </a>
+                                <div class="media-body">
+                                  <h3 class="media-heading">Users Management.</h3>
+                                  <p>Users register account themselves </p>
+                                  <p>User login to manage their profile</p>
+                                  <p>Users can retrieve lost password.</p>
+                                </div>
+                              </li>
+                               <li class="media">
+                                <a class="media-left" href="#">
+                                  <span class="fa fa-search icon text-success"></span>
+                                </a>
+                                <div class="media-body">
+                                  <h3 class="media-heading">Auto Data search.</h3>
+                                  <p>Autocomplete search for each table generated. </p>
+                         
+                                </div>
+                              </li>
+                               <li class="media">
+                                <a class="media-left" href="#">
+                                  <span class="fa fa-table icon text-success"></span>
+                                </a>
+                                <div class="media-body">
+                                  <h3 class="media-heading">Forms and Validation.</h3>
+                                  <p>Ajax form processing with activity loader </p>
+                                  <p>Full Ajax forms and none Ajax forms </p>
+                                  <p>Validation: HTML5, AJAX and PHP validation </p>
+                                  <p>Validation code for all form fields. </p>
+                         
+                                </div>
+                              </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+            </div><!-- /.box-body -->
+            <div class="box-footer">
+              ...the unique solution
+            </div><!-- /.box-footer-->
+          </div><!-- /.box -->
+
+		<?php }?>
+        <!-- /DESIGN AREA -->
         
-      </div>
-    </div>
-  </div>
-</div>
-<!--/end modal-->
+        </section><!-- /.content -->
+        
+      </div><!-- /.content-wrapper -->
+      <footer class="main-footer">
+        <div class="pull-right hidden-xs">
+          <b>v</b> 3.0
+        </div>
+        <strong>&copy; <?php echo date('Y')?> <a href="http://hezecom.com">Hezecom Technologies</a>.</strong> All rights reserved.
+      </footer>
+    </div><!-- ./wrapper -->
 <?php }?>
 
- <div id="footer" class="navbar-fixed-bottom">
-      <div class="container">
-        <p class="text-muted credit">&copy; 2015 <a href="http://hezecom.com">Hezecom Technologies</a></p>
-      </div>
-    </div>
-    
-    
-<script type="text/javascript" src="assets/js/jquery.js"></script>
-<script src="assets/js/bootstrap.min.js"></script>
-<script src="assets/js/jquery.box.js"></script>
-<script src="assets/js/hezecom.custom.js"></script>
-
+    <script src="<?php echo H_THEME;?>/js/bootstrap.min.js" type="text/javascript"></script>
+    <script src="<?php echo H_THEME;?>/js/jquery.slimscroll.min.js" type="text/javascript"></script>
+    <script src="<?php echo H_THEME;?>/js/footable.js" type="text/javascript"></script>
+    <script src="<?php echo H_THEME;?>/js/jquery.lightbox.min.js" type="text/javascript"></script>
+	<script src="<?php echo H_THEME;?>/js/bootstrap-datepicker.js"></script>
+    <script src="<?php echo H_THEME;?>/js/jquery.form.js"></script>
+    <script src="<?php echo H_THEME;?>/js/chosen.jquery.min.js"></script>
+    <script src="<?php echo H_THEME;?>/js/jquery.knob.js" type="text/javascript"></script>
+    <script src="<?php echo H_THEME;?>/js/bootstrap3-wysihtml5.all.min.js" type="text/javascript"></script>
+    <script src="<?php echo H_THEME;?>/js/app.min.js" type="text/javascript"></script>
+    <script src="<?php echo H_THEME;?>/js/hezecom.custom.js"></script>
+   
   </body>
-  </html>
+   
+</html>
